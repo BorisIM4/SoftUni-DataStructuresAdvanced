@@ -1,3 +1,9 @@
+target/
+
+*.iml
+*.xml
+*.class
+
 # Default ignored files
 /shelf/
 /workspace.xml
@@ -6,10 +12,3 @@
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
-
-
-target/
-
-*.xml
-*.iml
-*.class
