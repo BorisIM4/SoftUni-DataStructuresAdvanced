@@ -5,6 +5,16 @@ import interfaces.Deque;
 import java.util.Iterator;
 
 public class ArrayDeque<E> implements Deque<E> {
+    private final int INITIAL_CAPACITY = 7;
+
+    private int size;
+
+    private Object[] elements;
+
+    public ArrayDeque() {
+        this.elements =new Object[INITIAL_CAPACITY];
+    }
+
     @Override
     public void add(E Element) {
 
