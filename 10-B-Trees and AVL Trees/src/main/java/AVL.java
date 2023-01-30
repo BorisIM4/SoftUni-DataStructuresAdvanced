@@ -60,4 +60,8 @@ public class AVL<T extends Comparable<T>> {
 
         return node;
     }
+
+    private int height(Node node) {
+        return node != null ? node.height : -1;
+    }
 }
