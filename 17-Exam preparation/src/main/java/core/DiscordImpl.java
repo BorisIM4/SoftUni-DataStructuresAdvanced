@@ -2,62 +2,155 @@ package core;
 
 import models.Message;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DiscordImpl implements Discord {
 
+    private final Map<String, Message> messagesById;
+
+    private final Map<String, Set<Message>> messagesByChannel;
+
+    public DiscordImpl(){
+        this.messagesById = new LinkedHashMap<>();
+
+        this.messagesByChannel = new HashMap<>();
+    }
+
     @Override
     public void sendMessage(Message message) {
+        this.messagesById.put(message.getId(), message);
 
+        if (!this.messagesByChannel.containsKey(message.getChannel())) {
+            this.messagesByChannel.put(message.getChannel(), new LinkedHashSet<>());
+        }
+
+        Set<Message> messages = this.messagesByChannel.get(message.getChannel());
+        messages.add(message);
+        this.messagesByChannel.put(message.getChannel(), messages);
+
+        //Същото като горното но в един ред. Горното е по-добро.
+        //this.messagesByChannel.get(message.getChannel()).add(message);
     }
 
     @Override
     public boolean contains(Message message) {
-        return false;
+        return this.messagesById.containsKey(message.getId());
     }
 
     @Override
     public int size() {
-        return 0;
+        return this.messagesById.size();
     }
 
     @Override
     public Message getMessage(String messageId) {
-        return null;
+        Message result = this.messagesById.get(messageId);
+
+        if (result == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return result;
     }
 
     @Override
     public void deleteMessage(String messageId) {
+        Message result = this.messagesById.remove(messageId);
 
+        if (result == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.messagesByChannel.get(result.getChannel()).remove(result);
     }
 
     @Override
     public void reactToMessage(String messageId, String reaction) {
+        Message message = this.getMessage(messageId);
 
+        List<String> reactions = message.getReactions();
+
+        reactions.add(reaction);
     }
 
     @Override
     public Iterable<Message> getChannelMessages(String channel) {
-        return null;
+        //Това позлваме ако работим само с един речник -> по ID.
+//        List<Message> allMessages = this.messagesById
+//                .values()
+//                .stream()
+//                .filter(m -> m.getChannel().equals(channel))
+//                .collect(Collectors.toList());
+
+        //Това ползваме ако изпозлваме два речника за да иамме бърз достъп по ключ -> ID и Channel
+        Set<Message> allMessages = this.messagesByChannel.get(channel);
+
+        if (allMessages == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return allMessages;
+
+
     }
 
     @Override
     public Iterable<Message> getMessagesByReactions(List<String> reactions) {
-        return null;
+        return this.messagesById.values()
+                .stream()
+                .filter(m -> new HashSet<>(m.getReactions()).containsAll(reactions))
+                .sorted((l, r) -> {
+                    if (l.getReactions().size() != r.getReactions().size()) {
+                        return r.getReactions().size() - l.getReactions().size();
+                    }
+
+                    return l.getTimestamp() - r.getTimestamp();
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
     public Iterable<Message> getMessageInTimeRange(Integer lowerBound, Integer upperBound) {
-        return null;
+        return this.messagesById.values()
+                .stream()
+                .filter(m -> lowerBound <= m.getTimestamp() && m.getTimestamp() <= upperBound)
+                .sorted((l, r) -> {
+                    int lChannelMessagesCount = this.messagesByChannel.get(l.getChannel()).size();
+                    int rChannelMessagesCount = this.messagesByChannel.get(r.getChannel()).size();
+
+                    return rChannelMessagesCount - lChannelMessagesCount;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
     public Iterable<Message> getTop3MostReactedMessages() {
-        return null;
+        return this.messagesById.values()
+                .stream()
+                .sorted((l, r) -> r.getReactions().size() - l.getReactions().size())
+                .limit(3)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Iterable<Message> getAllMessagesOrderedByCountOfReactionsThenByTimestampThenByLengthOfContent() {
-        return null;
+        return this.messagesById.values()
+                .stream()
+                .sorted((l, r) -> {
+                    int lReactionSize = l.getReactions().size();
+                    int rReactionSize = r.getReactions().size();
+
+                    if (lReactionSize != rReactionSize) {
+                        return rReactionSize - lReactionSize;
+                    }
+
+                    if (l.getTimestamp() != r.getTimestamp()) {
+                        return l.getTimestamp() - r.getTimestamp();
+                    }
+
+                    return l.getContent().length() - r.getContent().length();
+                })
+                .collect(Collectors.toList());
     }
 }
