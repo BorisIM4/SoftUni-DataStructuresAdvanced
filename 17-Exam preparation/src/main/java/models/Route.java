@@ -75,9 +75,8 @@ public class Route {
 
     @Override
     public int hashCode() {
-        if(getLocationPoints().size() == 0) {
-            var a  =5;
-        }
-        return Objects.hash(getDistance(), getLocationPoints().get(0), getLocationPoints().get(getLocationPoints().size() - 1));
+        return Objects.hash(getDistance(),
+                getLocationPoints().get(0),
+                getLocationPoints().get(getLocationPoints().size() - 1));
     }
 }
