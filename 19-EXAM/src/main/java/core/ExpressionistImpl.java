@@ -2,13 +2,10 @@ package core;
 
 import models.Expression;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class ExpressionistImpl implements Expressionist {
-    private final Map<String, Expression> expressionById;
+        private final Map<String, Expression> expressionById;
 
     public ExpressionistImpl() {
         this.expressionById = new TreeMap<>();
@@ -16,8 +13,8 @@ public class ExpressionistImpl implements Expressionist {
 
     @Override
     public void addExpression(Expression expression) {
-        if (this.expressionById.size() > 0) {
-           throw new IllegalArgumentException();
+        if (!this.expressionById.isEmpty()) {
+            throw new IllegalArgumentException();
         }
 
         this.expressionById.put(expression.getId(), expression);
@@ -33,8 +30,10 @@ public class ExpressionistImpl implements Expressionist {
 
         if (currentParentExpr.getLeftChild() == null) {
             currentParentExpr.setLeftChild(expression);
+            this.expressionById.put(expression.getId(), expression);
         } else if (currentParentExpr.getRightChild() == null){
             currentParentExpr.setRightChild(expression);
+            this.expressionById.put(expression.getId(), expression);
         } else {
             throw new IllegalArgumentException();
         }
@@ -71,24 +70,22 @@ public class ExpressionistImpl implements Expressionist {
 
         if (result.getLeftChild() != null) {
             this.removeExpression(result.getLeftChild().getId());
+            result.setLeftChild(null);
         }
 
         if (result.getRightChild() != null) {
             this.removeExpression(result.getRightChild().getId());
+            result.setRightChild(null);
         }
 
         this.expressionById.remove(result.getId());
 
-        for (Map.Entry<String, Expression> entry : this.expressionById.entrySet()) {
-            Expression leftChild = entry.getValue().getLeftChild();
-            Expression rightChild = entry.getValue().getRightChild();
-
-            if (leftChild == null && rightChild != null) {
-                leftChild = rightChild;
-                rightChild = null;
-            }
-
-        }
+//        for (Expression value : this.expressionById.values()) {
+//            if (value.getLeftChild() == null) {
+//                value.setLeftChild(value.getRightChild());
+//                value.setRightChild(null);
+//            }
+//        }
     }
 
     @Override
