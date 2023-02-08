@@ -45,9 +45,7 @@ public class Main {
             setValue("3.5");
         }}, "3");
 
-        Expression expression = expressionist.getExpression("2");
-
-        expressionist.removeExpression("2");
+        expressionist.removeExpression("7");
 
         System.out.println(expressionist.evaluate());
     }

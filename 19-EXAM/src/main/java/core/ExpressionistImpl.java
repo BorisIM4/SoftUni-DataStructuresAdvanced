@@ -68,28 +68,52 @@ public class ExpressionistImpl implements Expressionist {
             throw new IllegalArgumentException();
         }
 
-        if (result.getLeftChild() != null) {
-            this.removeExpression(result.getLeftChild().getId());
-            result.setLeftChild(null);
+        for (Expression value : this.expressionById.values()) {
+            Expression root = value;
+
+            boolean flag = false;
+
+            if (value.getLeftChild() == result) {
+                removeExpr(result);
+
+                root.setLeftChild(root.getRightChild());
+                root.setRightChild(null);
+
+                flag = true;
+            } else if (value.getRightChild() == result) {
+                removeExpr(result);
+
+                root.setRightChild(null);
+
+                flag = true;
+            }
+
+            if (flag) {
+                return;
+            }
+
+        }
+    }
+
+    public void removeExpr (Expression expression) {
+
+        if (expression.getLeftChild() != null) {
+            this.removeExpr(expression.getLeftChild());
+            expression.setLeftChild(null);
         }
 
-        if (result.getRightChild() != null) {
-            this.removeExpression(result.getRightChild().getId());
-            result.setRightChild(null);
+        if (expression.getRightChild() != null) {
+            this.removeExpr(expression.getRightChild());
+            expression.setRightChild(null);
         }
 
-        this.expressionById.remove(result.getId());
-
-//        for (Expression value : this.expressionById.values()) {
-//            if (value.getLeftChild() == null) {
-//                value.setLeftChild(value.getRightChild());
-//                value.setRightChild(null);
-//            }
-//        }
+        this.expressionById.remove(expression.getId());
     }
 
     @Override
     public String evaluate() {
+
+
         return null;
     }
 }
