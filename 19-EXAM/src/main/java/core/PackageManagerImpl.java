@@ -23,8 +23,19 @@ public class PackageManagerImpl implements PackageManager {
 
     @Override
     public void registerPackage(Package _package) {
-        if (this.packages.contains(_package)) {
-            throw new IllegalArgumentException();
+        if (!this.packages.isEmpty()) {
+            String name = _package.getName();
+            String version = _package.getVersion();
+
+            List<Package> collect = this.packages
+                    .stream()
+                    .filter(p -> p.getName().equals(name)
+                            && p.getVersion().equals(version))
+                    .collect(Collectors.toList());
+
+            if (collect.size() != 0) {
+                throw new IllegalArgumentException();
+            }
         }
 
         this.packageById.put(_package.getId(), _package);
@@ -40,6 +51,7 @@ public class PackageManagerImpl implements PackageManager {
         }
 
         this.packages.remove(result);
+        this.dependencies.remove(result);
     }
 
     @Override
@@ -67,27 +79,37 @@ public class PackageManagerImpl implements PackageManager {
 
     @Override
     public int size() {
-        return this.packageById.size();
+        return this.packages.size();
     }
 
     @Override
     public Iterable<Package> getDependants(Package _package) {
-        return this.packages.stream()
-                .filter(this.dependencies::containsKey)
-                .collect(Collectors.toList());
-//        List<Package> result = this.dependencies.get(_package);
-//
-//        if (result == null) {
-//            return new ArrayList<>();
-//        }
-//
-//        return result;
+        List<Package> packages = this.dependencies.get(_package);
+
+        if (packages == null) {
+            return Collections.emptyList();
+        }
+
+        return packages;
     }
 
     @Override
     public Iterable<Package> getIndependentPackages() {
         return this.packages.stream()
-                .filter(p -> !this.dependencies.containsKey(p))
+                .filter(p -> {
+                    if (this.dependencies.containsKey(p)) {
+                        return false;
+                    }
+
+//                    Collection<List<Package>> dependenceValues = this.dependencies.values();
+//                    for (List<Package> dependenceValue : dependenceValues) {
+//                        if (dependenceValue.contains(p)) {
+//                            return false;
+//                        }
+//                    }
+
+                    return true;
+                })
                 .sorted((l, r) -> {
                     LocalDateTime leftReleaseDate = l.getReleaseDate();
                     LocalDateTime rightReleaseDate = r.getReleaseDate();
@@ -95,10 +117,10 @@ public class PackageManagerImpl implements PackageManager {
 
                     if (leftReleaseDate != rightReleaseDate) {
                         return rightReleaseDate.compareTo(leftReleaseDate);
-                   }
+                    }
 
-                   return l.getVersion().compareTo(r.getVersion());
-               })
+                    return l.getVersion().compareTo(r.getVersion());
+                })
                 .collect(Collectors.toList());
     }
 
