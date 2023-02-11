@@ -1,6 +1,7 @@
 package core;
 
 import models.Expression;
+import models.ExpressionType;
 
 import java.util.*;
 
@@ -112,8 +113,44 @@ public class ExpressionistImpl implements Expressionist {
 
     @Override
     public String evaluate() {
+        Expression root = findRoot();
+
+        return goDeap(root);
+    }
+
+    private Expression findRoot() {
+        Expression root = new Expression();
+
+        for (Expression value : this.expressionById.values()) {
+            root = value;
+            break;
+        }
+
+        return root;
+    }
+
+    private String goDeap(Expression root) {
+        StringBuilder sb = new StringBuilder();
+
+        Expression leftChild = root.getLeftChild();//10
+        Expression rightChild = root.getRightChild();//30
+
+        if (leftChild.getLeftChild() != null) {
+            goDeap(leftChild);
+        }
+
+        String rootType = root.getType().toString();
+        String rootValue = root.getValue();
+        String leftChildValue = leftChild.getValue();
+        String rightChildValue = rightChild.getValue();
+
+        if (rootType.equals("Value")) {
+            sb.append(rootValue);
+        } else {
+            sb.append(String.format("(%s %s %s)", leftChildValue, rootValue, rightChildValue));
+        }
 
 
-        return null;
+        return sb.toString();
     }
 }

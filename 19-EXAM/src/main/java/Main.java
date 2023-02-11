@@ -11,44 +11,61 @@ import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) {
+
+
+//        LocalDateTime date = LocalDateTime.of(2020, 1, 8,20, 55, 55);
+//        LocalDateTime date1 = LocalDateTime.of(2021, 1, 8,20, 55, 55);
+//        LocalDateTime date2 = LocalDateTime.of(2022, 1, 8,20, 55, 55);
+//        LocalDateTime date3 = LocalDateTime.of(2023, 1, 8,20, 55, 55);
+//        LocalDateTime date4 = LocalDateTime.of(2024, 1, 8,20, 55, 55);
+//
+//        PackageManagerImpl packageManager = new PackageManagerImpl();
+//
+//        Package pack = new Package("1", "Boris", "33", date);
+//        Package pack1 = new Package("2", "Aleks", "33", date1);
+//        Package pack2 = new Package("3", "Krissie", "1", date2);
+//        Package pack3 = new Package("4", "Borisa", "1", date3);
+//        Package pack4 = new Package("5", "Rumi", "75", date4);
+//        Package pack5 = new Package("6", "Rumi", "70", date4);
+//
+//
+//        Package pack6 = new Package("5", "Gosho", "75", date4);
+//
+//        packageManager.registerPackage(pack);
+//        packageManager.registerPackage(pack1);
+//        packageManager.registerPackage(pack2);
+//        packageManager.registerPackage(pack3);
+//        packageManager.registerPackage(pack4);
+//        packageManager.registerPackage(pack5);
+//
+//        packageManager.addDependency("1", "3");
+//        packageManager.addDependency("1", "4");
+//
+//        packageManager.removePackage("1");
+//
+//        boolean contains = packageManager.contains(pack6);
+//
+//        int size = packageManager.size();
+//
+//        Iterable<Package> dependants = packageManager.getDependants(pack);
+//
+//        Iterable<Package> independentPackages = packageManager.getIndependentPackages();
+//
+//        Iterable<Package> orderedPackagesByReleaseDateThenByVersion = packageManager
+//                .getOrderedPackagesByReleaseDateThenByVersion();
+//
+//        System.out.println();
+
+
         Expressionist expressionist = new ExpressionistImpl();
 
-        LocalDateTime date = LocalDateTime.of(2020, 1, 8,20, 55, 55);
-        LocalDateTime date1 = LocalDateTime.of(2021, 1, 8,20, 55, 55);
-        LocalDateTime date2 = LocalDateTime.of(2022, 1, 8,20, 55, 55);
-        LocalDateTime date3 = LocalDateTime.of(2023, 1, 8,20, 55, 55);
-        LocalDateTime date4 = LocalDateTime.of(2024, 1, 8,20, 55, 55);
+        expressionist.addExpression(new Expression() {{
+            setId("1");
+            setType(ExpressionType.VALUE);
+            setValue("5");
+        }});
 
-        PackageManagerImpl packageManager = new PackageManagerImpl();
-
-        Package pack = new Package("1", "Boris", "33", date);
-        Package pack1 = new Package("2", "Aleks", "33", date1);
-        Package pack2 = new Package("3", "Krissie", "1", date2);
-        Package pack3 = new Package("4", "Borisa", "1", date3);
-        Package pack4 = new Package("5", "Rumi", "75", date4);
-        Package pack5 = new Package("6", "Rumi", "75", date4);
-
-
-        Package pack6 = new Package("5", "Gosho", "75", date4);
-
-        packageManager.registerPackage(pack);
-        packageManager.registerPackage(pack1);
-        packageManager.registerPackage(pack2);
-        packageManager.registerPackage(pack3);
-        packageManager.registerPackage(pack4);
-
-        packageManager.addDependency("1", "3");
-        packageManager.addDependency("1", "4");
-
-        boolean contains = packageManager.contains(pack6);
-
-        int size = packageManager.size();
-
-        Iterable<Package> dependants = packageManager.getDependants(pack);
-
-        Iterable<Package> independentPackages = packageManager.getIndependentPackages();
-
-        System.out.println();
+        System.out.println(expressionist.evaluate());
 
 //        expressionist.addExpression(new Expression() {{
 //            setId("1");

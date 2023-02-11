@@ -97,18 +97,7 @@ public class PackageManagerImpl implements PackageManager {
     public Iterable<Package> getIndependentPackages() {
         return this.packages.stream()
                 .filter(p -> {
-                    if (this.dependencies.containsKey(p)) {
-                        return false;
-                    }
-
-//                    Collection<List<Package>> dependenceValues = this.dependencies.values();
-//                    for (List<Package> dependenceValue : dependenceValues) {
-//                        if (dependenceValue.contains(p)) {
-//                            return false;
-//                        }
-//                    }
-
-                    return true;
+                    return !this.dependencies.containsKey(p);
                 })
                 .sorted((l, r) -> {
                     LocalDateTime leftReleaseDate = l.getReleaseDate();
@@ -135,12 +124,8 @@ public class PackageManagerImpl implements PackageManager {
                     if (leftDate != rightDate) {
                         return rightDate.compareTo(leftDate);
                     } else {
-                        if (l.getName().equals(r.getName())) {
-                            return r.getVersion().compareTo(l.getVersion());
-                        }
+                        return l.getVersion().compareTo(r.getVersion());
                     }
-
-                    return l.getVersion().compareTo(r.getVersion());
                 })
                 .collect(Collectors.toList());
     }
